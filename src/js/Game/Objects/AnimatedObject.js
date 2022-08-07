@@ -1,6 +1,6 @@
 import {Animated, StyleSheet, Text, TouchableWithoutFeedback, View} from 'react-native';
 import {useEffect, useRef} from "react";
-import {ScoreContext} from "../Context/score-context";
+import {ScoreContext} from "../../Context/score-context";
 
 export default function AnimatedObject(props) {
 

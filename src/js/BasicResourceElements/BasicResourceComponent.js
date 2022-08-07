@@ -6,6 +6,7 @@ import {useAlert} from "react-alert";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import {View} from "react-native";
 
 export default function BasicResourceComponent(props) {
     const alert = useAlert();
@@ -137,42 +138,49 @@ export default function BasicResourceComponent(props) {
     }
 
     return (
-        <section className="base-resource-component">
-            <div className="base-resource-component__adder">
-                <BasicComponentAdder
-                    EditingComponent={props.EditingComponent}
-                    name={props.name}
-                    createElement={createElement}
-                />
-            </div>
-            <div className="base-resource-component__list">
-                <InfiniteScroll
-                    dataLength={Object.keys(mainElements).length}
-                    next={loadMainElements.bind(this)}
-                    hasMore={hasMore}
-                    loader={<h4>Loading...</h4>}
-                    endMessage={
-                        <p className="all-loaded-message mt-3">
-                            <b>All {namePlural} have been loaded</b>
-                        </p>
-                    }
-                >
-                    {Object.entries(mainElements).map(
-                        ([mainElementIndex, mainElement]) =>
-                            (
-                                <BasicSingleResourceBlock
-                                    EditingComponent={props.EditingComponent}
-                                    DefaultComponent={props.DefaultComponent}
-                                    key={mainElementIndex}
-                                    {...mainElement}
-                                    openDeleteConfirmation={openDeleteConfirmation.bind(this)}
-                                    UpdateElement={updateElement.bind(this)}
-                                />
-                            )
-                    ).reverse()
-                    }
-                </InfiniteScroll>
-            </div>
-        </section>
+        <View>
+            <BasicComponentAdder
+                EditingComponent={props.EditingComponent}
+                name={props.name}
+                createElement={createElement}
+            />
+        </View>
+        // <section className="base-resource-component">
+        //     <div className="base-resource-component__adder">
+        //         <BasicComponentAdder
+        //             EditingComponent={props.EditingComponent}
+        //             name={props.name}
+        //             createElement={createElement}
+        //         />
+        //     </div>
+        //     <div className="base-resource-component__list">
+        //         <InfiniteScroll
+        //             dataLength={Object.keys(mainElements).length}
+        //             next={loadMainElements.bind(this)}
+        //             hasMore={hasMore}
+        //             loader={<h4>Loading...</h4>}
+        //             endMessage={
+        //                 <p className="all-loaded-message mt-3">
+        //                     <b>All {namePlural} have been loaded</b>
+        //                 </p>
+        //             }
+        //         >
+        //             {Object.entries(mainElements).map(
+        //                 ([mainElementIndex, mainElement]) =>
+        //                     (
+        //                         <BasicSingleResourceBlock
+        //                             EditingComponent={props.EditingComponent}
+        //                             DefaultComponent={props.DefaultComponent}
+        //                             key={mainElementIndex}
+        //                             {...mainElement}
+        //                             openDeleteConfirmation={openDeleteConfirmation.bind(this)}
+        //                             UpdateElement={updateElement.bind(this)}
+        //                         />
+        //                     )
+        //             ).reverse()
+        //             }
+        //         </InfiniteScroll>
+        //     </div>
+        // </section>
     );
 }

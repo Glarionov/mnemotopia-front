@@ -1,40 +1,46 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from "react";
+import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useEffect, useState} from "react";
 import AwesomeAlert from "react-native-awesome-alerts";
+import {AlertContext} from "../Context/alert-context";
 
-export default function Alert(props) {
-
+export default function MyAlert(props) {
     const [showAlert, setShowAlert] = useState(false);
+
+    const show = useContext(AlertContext);
+
+
+    const [message, setMessage] = useState(props.message ?? 'Default message');
+
+
+    useEffect(
+        () => {
+            setShowAlert(props.showAlert)
+        },  [props.showAlert]
+    );
+
+    if (!show.show) {
+        return <View></View>;
+    }
 
     return (
         <View style={styles.container}>
-
-            <Text>I'm AwesomeAlert</Text>
-            <TouchableOpacity onPress={() => {
-                setShowAlert(true);
-            }}>
-                <View style={styles.button}>
-                    <Text style={styles.text}>Try me!</Text>
-                </View>
-            </TouchableOpacity>
-
             <AwesomeAlert
-                show={showAlert}
+                show={show.show}
                 showProgress={false}
-                title="AwesomeAlert"
-                message="I have a message for you!"
+                title="Need to confirm"
+                message={show.message}
                 closeOnTouchOutside={true}
                 closeOnHardwareBackPress={false}
                 showCancelButton={true}
                 showConfirmButton={true}
-                cancelText="No, cancel"
-                confirmText="Yes, delete it"
+                cancelText="cancel"
+                confirmText="OK"
                 confirmButtonColor="#DD6B55"
                 onCancelPressed={() => {
-                    setShowAlert(false);
+                    show.setShowAlert2(false);
                 }}
                 onConfirmPressed={() => {
-                    setShowAlert(false);
+                    show.setShowAlert2(false, true);
                 }}
             />
         </View>
@@ -46,7 +52,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        position: 'fixed',
+        zIndex: 1000,
+        width: '100%',
+        height: '100%'
     },
     button: {
         margin: 10,

@@ -1,4 +1,4 @@
-import RandomHelper from "../../helpers/RandomHelper";
+import RandomHelper from "../helpers/RandomHelper";
 
 export default class  QuestionResettingObject
 {
@@ -8,6 +8,7 @@ export default class  QuestionResettingObject
         let result = currentAnswers;
         if (params.sharedOptions) {
             let allOptionsKeys = Object.keys(options);
+            /*s*/console.log('currentAnswers=', currentAnswers); //todo r
             let freeOptions = allOptionsKeys.filter((value) => !currentAnswers.includes(Number(value)));
 
             let shuffledFreeOption = RandomHelper.shuffleArray(freeOptions);
@@ -60,13 +61,13 @@ export default class  QuestionResettingObject
                 /*s*/console.log('currentQuestion.type=', currentQuestion.type); //todo r
                 switch (currentQuestion.type) {
                     case 1:
-                        currentAnswers = currentQuestion.rightAnswers;
+                        currentAnswers = currentQuestion.correctAnswers;
                         settedOptions[questionId] = QuestionResettingObject.mixGoodAndAllAnswers(currentAnswers, options, params);
                         break;
                     case 2:
                         let result = [];
                         for (let partIndex in currentQuestion.parts) {
-                            result[partIndex] = QuestionResettingObject.mixGoodAndAllAnswers(currentQuestion.parts[partIndex].rightAnswers,
+                            result[partIndex] = QuestionResettingObject.mixGoodAndAllAnswers(currentQuestion.parts[partIndex].correctAnswers,
                                 options, params);
                         }
                         settedOptions[questionId] = result;
@@ -83,11 +84,13 @@ export default class  QuestionResettingObject
 
     static resetShowingQuestionParts(loadedQuestions, options, params)
     {
+        /*s*/console.log('loadedQuestions=', loadedQuestions); //todo r
         for (let questionIndex in loadedQuestions) {
             let question = loadedQuestions[questionIndex];
 
             loadedQuestions[questionIndex].showingText = question.text;
-            if (question.type !== 2) {
+            /*s*/console.log('question.parts=', question.parts); //todo r
+            if (question.type !== 2 || !question.parts) {
                 continue;
             }
             loadedQuestions[questionIndex].showingText = [...question.text];
@@ -97,7 +100,7 @@ export default class  QuestionResettingObject
                 let part = question.parts[partId];
                 if (params.currentHideLevel < part.hideLevel) {
                     let indexOfPart = question.text.indexOf(Number(partId));
-                    loadedQuestions[questionIndex].showingText[indexOfPart] = options[part.rightAnswers[0]].text;
+                    loadedQuestions[questionIndex].showingText[indexOfPart] = options[part.correctAnswers[0]].text;
                     delete question.showingParts[partId];
                 } else {
 

@@ -1,6 +1,6 @@
 import Box from "../Objects/ConcreteObjects/Box";
 import GameFieldInfo from "../GameFieldInfo";
-import QuestionsMain from "../Questions/QuestionsMain";
+import QuestionsMain from "../../Questions/QuestionsMain";
 import RandomHelper from "../../helpers/RandomHelper";
 
 export default class BoxCreator {

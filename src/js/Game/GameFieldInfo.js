@@ -9,7 +9,7 @@ export default class {
         this.yScale = Dimensions.get('window').height / 1000;
 
         this.x = 950;
-        this.y = 800;
+        this.y = 700;
 
         this.width = this.x * this.xScale;
         this.height = this.y * this.yScale;

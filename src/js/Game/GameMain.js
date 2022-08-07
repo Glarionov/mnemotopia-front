@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import {Button, StyleSheet, Text, View} from 'react-native';
 import {useEffect, useState} from "react";
 import GameFieldInfo from "./GameFieldInfo";
 import {Dimensions} from "react-native";
@@ -9,15 +9,15 @@ import GameIterationMain from "./GameIteraion/GameIterationMain";
 import AnimationTest from "./AnimationTest";
 import AnimationTestMoving from "./AnimationTestMoving";
 import AnimatedObject from "./Objects/AnimatedObject";
-import {ScoreContext} from "./Context/score-context";
+import {ScoreContext} from "../Context/score-context";
 import {TouchableOpacity} from "react-native";
 import BoxCreator from "./GameIteraion/BoxCreator";
-import QuestionsMain from "./Questions/QuestionsMain";
+import QuestionsMain from "../Questions/QuestionsMain";
 import QuestionTextMain from "./QuestionText/QuestionTextMain";
 
 // import logBoxLog from "react-native/Libraries/LogBox/Data/LogBoxLog";
 
-export default function TestGame(props) {
+export default function GameMain(props) {
     const [gameObjects, setGameObjects] = useState({});
     const [gameIterationMain] = useState(new GameIterationMain());
     const [score, setScore] = useState(0);
@@ -69,6 +69,7 @@ export default function TestGame(props) {
     }
 
 
+
     useEffect(
         () => {
             setDifficulty(boxCreatorObject.dificulty);
@@ -105,30 +106,9 @@ export default function TestGame(props) {
         if (!paused) {
             if (touchedObject.hasOwnProperty('optionId')) {
 
-                let newScore = 0;
-
-                switch (questionHelperObject.currentQuestionType) {
-                    case 1:
-                        if (questionHelperObject.currentQuestion.rightAnswer === touchedObject.optionId) {
-                            newScore = score + 1;
-                        } else {
-                            newScore = score - 1;
-                        }
-                        break;
-
-                    case 2:
-                        if (questionHelperObject.currentQuestion.parts[questionHelperObject.currentQuestionPart] === touchedObject.optionId) {
-                            newScore = score + 1;
-                        } else {
-                            newScore = score - 1;
-                        }
-                        break;
-                }
-
-
+                let newScore = questionHelperObject.changeHandleAnswering(score, touchedObject.optionId);
                 setScore(newScore);
             }
-
             touchedObject.touchAction();
         }
 
@@ -198,6 +178,13 @@ export default function TestGame(props) {
                     }
                 />
             </View>
+
+            <Button
+                title="NonGameTesting"
+                onPress={() =>
+                    props.navigation.navigate('NonGameTesting', { name: 'NonGameTesting' })
+                }
+            />
 
             <TouchableOpacity
                 style={{width: 40}}

@@ -10,7 +10,7 @@ const AniTest = (props) => {
         Animated.timing(fadeAnim, {
             toValue: 100,
             duration: 500,
-            useNativeDriver: true
+            useNativeDriver: false
         }).start();
     };
 
@@ -19,7 +19,7 @@ const AniTest = (props) => {
         Animated.timing(fadeAnim, {
             toValue: 0,
             duration: 500,
-            useNativeDriver: true
+            useNativeDriver: false
         }).start();
     };
 
@@ -30,7 +30,7 @@ const AniTest = (props) => {
             Animated.timing(fadeAnim, {
                 toValue: props.y,
                 duration: 500,
-                useNativeDriver: true
+                useNativeDriver: false
             }).start();
     }, [props.y])
 

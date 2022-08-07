@@ -1,7 +1,7 @@
-import GameFieldInfo from "../GameFieldInfo";
-import RandomHelper from "../../helpers/RandomHelper";
+import GameFieldInfo from "../Game/GameFieldInfo";
+import RandomHelper from "../helpers/RandomHelper";
 import axios from "axios";
-import ArrayObjectHelper from "../../helpers/ArrayObjectHelper";
+import ArrayObjectHelper from "../helpers/ArrayObjectHelper";
 import QuestionResettingObject from "./QuestionResettingObject";
 
 export default class QuestionsMain
@@ -19,7 +19,7 @@ export default class QuestionsMain
                 text: 'Select good option',
                 showingText: 'Select good option',
                 id: 1,
-                rightAnswers: [1, 6],
+                correctAnswers: [1, 6],
                 type: 1,
                 options: [1, 2, 3]
             },
@@ -27,7 +27,7 @@ export default class QuestionsMain
                 text: 'Select bad option',
                 showingText: 'Select bad option',
                 id: 2,
-                rightAnswers: [2],
+                correctAnswers: [2],
                 type: 1
             },
             3: {
@@ -39,27 +39,27 @@ export default class QuestionsMain
                 type: 2,
                 maxPart: 1,
                 partsIds: [0, 3],
-                parts: {0: {rightAnswers:[3], hideLevel: 3}, 3: {rightAnswers: [4], hideLevel: 1}}
+                parts: {0: {correctAnswers:[3], hideLevel: 3}, 3: {correctAnswers: [4], hideLevel: 1}}
             },
             4: {
                 text: '444Select bad option',
                 showingText: '444Select bad option',
                 id: 4,
-                rightAnswers: [2],
+                correctAnswers: [2],
                 type: 1
             },
             5: {
                 text: '555Select bad option',
                 showingText: '555Select bad option',
                 id: 5,
-                rightAnswers: [2],
+                correctAnswers: [2],
                 type: 1
             },
             6: {
                 text: '666Select bad option',
                 showingText: '666Select bad option',
                 id: 6,
-                rightAnswers: [2],
+                correctAnswers: [2],
                 type: 1
             },
         };
@@ -101,13 +101,13 @@ export default class QuestionsMain
         this.loadedQuestionGroups = [
              {
                 chains: [[[1], [4]]],
-                sharedAnswers: true,
+                shared_answers: true,
                 freeQuestions: [],
                 options: [1, 2, 3, 4, 5, 6]
             },
             {
                 chains: [[[3]]],
-                sharedAnswers: true,
+                shared_answers: true,
                 freeQuestions: [],
                 options: [1, 2, 3, 4, 5, 6]
             },
@@ -137,17 +137,24 @@ export default class QuestionsMain
 
     async loadQuestions()
     {
-        return await axios('http://127.0.0.1:8000/test', {
+        // todo r
+        return await axios('http://127.0.0.1:8000/api/groups/get-questions', {
             method: 'GET',
             mode: 'no-cors',
             headers: {
-                'Access-Control-Allow-Origin': '*',
+                // 'Access-Control-Allow-Origin': '*',
                 'Content-Type': 'application/json',
             },
             withCredentials: false,
             credentials: 'same-origin',
         }).then(response => {
-            this.loadedQuestions = response.data.questions;
+
+            let loadedData = response.data;
+            /*s*/console.log('response.data=', response.data); //todo r
+
+            this.loadedQuestionGroups = loadedData.groups;
+            this.loadedQuestions = loadedData.questions;
+            this.options = loadedData.options;
         })
     }
 
@@ -156,7 +163,16 @@ export default class QuestionsMain
         this.showingQuestionOptions = {};
         let result = this.loadedQuestionGroups[this.currentGroupIndex].settedOptions[this.currentQuestion.id];
 
+        /*s*/console.log('this.currentQuestion=', this.currentQuestion); //todo r
+        /*s*/console.log('this.currentQuestion.id=', this.currentQuestion.id); //todo r
+        /*s*/console.log('this.loadedQuestionGroups[this.currentGroupIndex]=', this.loadedQuestionGroups[this.currentGroupIndex]); //todo r
+
+        /*s*/console.log('result=', result); //todo r
         if (this.currentQuestion.type == 2) {
+            /*s*/console.log('this.currentQuestion.partsIds.length=', this.currentQuestion.partsIds.length); //todo r
+            if (this.currentQuestion.partsIds.length == 0) {
+                return false;
+            }
             /*s*/console.log('result=', result); //todo r
             let partId = this.currentQuestion.partsIds[this.currentQuestionPart];
             result = result[partId];
@@ -193,6 +209,10 @@ export default class QuestionsMain
 
     changeQuestion(changeValue = 1, relative = true, reset = false)
     {
+        /*s*/console.log('this.loadedQuestionGroups=', this.loadedQuestionGroups); //todo r
+
+        /*s*/console.log('this.currentGroupIndex=', this.currentGroupIndex); //todo r
+
         let questionKeys = this.loadedQuestionGroups[this.currentGroupIndex].settedQuestionsOrder;
         let currentQuestionIndex = this.currentQuestionIndex;
         let newIndex;
@@ -248,6 +268,9 @@ export default class QuestionsMain
             }
 
             let options = this.setCurrentQuestionOptions();
+            if (!options) {
+                return this.changeQuestion(1);
+            }
 
             return {success: true, last, first, question: this.currentQuestion, options};
         } else {
@@ -306,7 +329,7 @@ export default class QuestionsMain
         let newScore = 0;
         switch (this.currentQuestion.type) {
             case 1:
-                if (this.currentQuestion.rightAnswers.includes(optionId)) {
+                if (this.currentQuestion.correctAnswers.includes(optionId)) {
                     newScore = score + 1;
                 } else {
                     newScore = score - 1;
@@ -315,7 +338,7 @@ export default class QuestionsMain
 
             case 2:
                 let partId = this.currentQuestion.partsIds[this.currentQuestionPart];
-                if (this.currentQuestion.showingParts[partId].rightAnswers.includes(optionId)) {
+                if (this.currentQuestion.showingParts[partId].correctAnswers.includes(optionId)) {
                     newScore = score + 1;
                 } else {
                     newScore = score - 1;
@@ -326,18 +349,38 @@ export default class QuestionsMain
         return newScore
     }
 
-    getCurrentQuestionRightAnswersText()
+    getCurrentQuestioncorrectAnswersText()
     {
+        let correctAnswers;
         if (this.currentQuestion.type == 1) {
-            return this.currentQuestion.rightAnswers;
+            correctAnswers = this.currentQuestion.correctAnswers;
+        } else {
+            correctAnswers = this.currentQuestion.parts[this.currentQuestion.partsIds[this.currentQuestionPart]];
         }
-        return this.currentQuestion.parts[this.currentQuestion.partsIds[this.currentQuestionPart]];
+
+        let result = [];
+
+        for (let optionId of correctAnswers) {
+            result.push(this.options[optionId].text);
+        }
+
+        return result;
     }
 
     changeScoreByAnswerText(score, text)
     {
-        let rightAnswers = this.getCurrentQuestionRightAnswersText();
-        /*s*/console.log('rightAnswers=', rightAnswers); //todo r
+        let correctAnswers = this.getCurrentQuestioncorrectAnswersText();
+
+        let change = 1;
+        if (correctAnswers.includes(text)) {
+            change = 1;
+        } else {
+            change = -1;
+        }
+
+        score += change;
+
+        return {newScore: score, change};
     }
 
     changeHideLevel(changeValue = 0)

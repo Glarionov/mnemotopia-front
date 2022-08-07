@@ -1,7 +1,7 @@
 import Box from "../Objects/ConcreteObjects/Box";
 import GameFieldInfo from "../GameFieldInfo";
 import BoxCreator from "./BoxCreator";
-import QuestionsMain from "../Questions/QuestionsMain";
+import QuestionsMain from "../../Questions/QuestionsMain";
 export default class GameIterationMain {
 
 
